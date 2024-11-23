@@ -1,27 +1,39 @@
+-- Criar Banco de Dados "bd_aula03"
+CREATE DATABASE bd_aula03;
+
+-- Criar Tabelas do MER 
 CREATE TABLE tbl_cliente (
-codigo_cliente SERIAL PRIMARY KEY,
-nome TEXT NOT NULL,
-cidade TEXT NOT NULL,
-endereco TEXT NOT NULL
+    codigo_cliente INTEGER PRIMARY KEY,
+    nome text NOT NULL,
+    cidade text,
+    endereco text
 );
-
-CREATE TABLE tbl_titulo (
-codigo_titulo SERIAL PRIMARY KEY,
-titulo TEXT NOT NULL,
-descrição TEXT NOT NULL,
-categoria TEXT
-);
-
-CREATE DOMAIN status_livro TEXT CHECK(VALUE IN ('DISPONIVEL', 'INDISPONIVEL'));
-
-CREATE TABLE tbl_livros(
-codigo_livro SERIAL PRIMARY KEY,
-codigo_titulo INTEGER NOT NULL REFERENCES tbl_titulo(codigo_titulo) ,
-status status_livro DEFAULT 'DISPONIVEL'
-);
-
 CREATE TABLE tbl_emprestimo (
-numero_emprestimo SERIAL PRIMARY KEY,
-codigo_cliente INTEGER NOT NULL REFERENCES tbl_cliente(codigo_cliente),
-codigo_livro INTEGER NOT NULL REFERENCES tbl_livros(codigo_livro)
+    numero_emprestimo INTEGER PRIMARY KEY,
+    codigo_cliente INTEGER,
+    codigo_livro INTEGER
+); 
+CREATE TABLE tbl_titulo (
+    codigo_titulo INTEGER PRIMARY KEY,
+    titulo text NOT NULL,
+    descricao text,
+    categoria text
 );
+CREATE TABLE tbl_livros (
+    cod_livros INTEGER PRIMARY KEY,
+    codigo_titulo INTEGER,
+    status text
+);
+
+-- Criar Domains
+CREATE DOMAIN chk_status text check (value in('DISPONIVEL','ALUGADO'));
+CREATE DOMAIN chk_categoria text check (value in('DRAMA','COMEDIA'));
+ 
+-- Adicionar Domain a Tabela
+ALTER TABLE tbl_titulo ALTER COLUMN categoria TYPE chk_categoria;
+ALTER TABLE tbl_livros ALTER COLUMN status TYPE chk_status;
+ 
+-- Adicionar Chaves Estrangeiras
+ALTER TABLE tbl_emprestimo ADD CONSTRAINT fk_cod_cliente FOREIGN KEY (codigo_cliente) REFERENCES tbl_cliente (codigo_cliente);
+ALTER TABLE tbl_emprestimo ADD CONSTRAINT fk_cod_livro FOREIGN KEY (codigo_livro) REFERENCES tbl_livros (cod_livros);
+ALTER TABLE tbl_livros ADD CONSTRAINT fk_cod_titulo FOREIGN KEY (codigo_titulo) REFERENCES tbl_titulo (codigo_titulo);
